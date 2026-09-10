@@ -2,8 +2,8 @@
 
 public class Apparaat
 {
-    private string _naam { get; private set; }
-    private  bool _aan { get; private set; }
+    private string _naam;
+    private bool _aan;
 
     public Apparaat(string naam, bool aan)
     {
