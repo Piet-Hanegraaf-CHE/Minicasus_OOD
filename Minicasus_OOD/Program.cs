@@ -6,8 +6,8 @@ public class Program
     {
         Slimme_thermostaat slimmeThermostaat = new Slimme_thermostaat("Slimme Thermostaat", true);
         Console.WriteLine($"Apparaat: {slimmeThermostaat.Naam}, Aan: {slimmeThermostaat.Aan}");
-        double nieuweTemperatuur = slimmeThermostaat.VeranderTemperatuur(22.5);
-        Console.WriteLine($"Nieuwe temperatuur ingesteld op: {nieuweTemperatuur}°C");
+        slimmeThermostaat.Temperatuurinsteller(22);
+        Console.WriteLine($"Nieuwe temperatuur ingesteld op: {slimmeThermostaat.Temperatuur}°C");
     }
 }
 
