@@ -4,9 +4,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Slimme_thermostaat slimmeThermostaat = new Slimme_thermostaat("Slimme Thermostaat", true);
+        SlimmeThermostaat slimmeThermostaat = new SlimmeThermostaat("Slimme Thermostaat", true);
         Console.WriteLine($"Apparaat: {slimmeThermostaat.Naam}, Aan: {slimmeThermostaat.Aan}");
-        slimmeThermostaat.Temperatuurinsteller(22);
+        slimmeThermostaat.SetTemperatuur(22);
         Console.WriteLine($"Nieuwe temperatuur ingesteld op: {slimmeThermostaat.Temperatuur}°C");
     }
 }
@@ -20,15 +20,21 @@ public class Benchmark
 
 }
 
-public class Regelbare_verlichting
+
+
+public class RegelbareVerlichting : Apparaat
 {
     private decimal _helderheid; // verborgen voor de buitenwereld
 
+    public RegelbareVerlichting(string naam, bool aan) : base(naam, aan)
+    {
+    }
+
     public decimal Helderheid => _helderheid; // alleen-lezen naar buiten toe
 
-    public void Dimmer(decimal helderheid)
+    public void SetDimmer(decimal helderheid)
     {
-        if (helderheid <= 0)
+        if (helderheid < 0)
             throw new ArgumentException("Helderheid moet positief zijn");
         if (helderheid > 100)
             throw new ArgumentException("Helderheid moet onder de 100% zijn");
@@ -37,16 +43,32 @@ public class Regelbare_verlichting
 
 }
 
+public class Camput // is een compositie van gebouw. Zonder gebouw geen campus.
+{
+    //
+}
+
+public class Gebouw // is een compositie van zones. Zonder zones geen gebouw.
+{
+    //
+}
+
 public class Zone // is een compositie van gebouw. Zonder gebouw geen zones.
 {
     private string naam;
 }
 
-public abstract class Sensor : Apparaat
+public abstract class HardwareComponent
+{
+    private string _naam;
+    private bool _aan;
+}
+
+public abstract class Sensor : HardwareComponent // aggregatie
 {
     private bool _aanhetmeten;
 
-    protected Sensor(string naam, bool aan) : base(naam, aan)
+    protected Sensor(string naam, bool aan)
     {
     }
 }
@@ -67,18 +89,18 @@ public abstract class Apparaat
     public bool Aan => _aan;
 }
 
-public class Slimme_thermostaat : Apparaat
+public class SlimmeThermostaat : Apparaat //aggregatie
 {
 
-    public Slimme_thermostaat(string naam, bool aan) : base(naam, aan) { }
+    public SlimmeThermostaat(string naam, bool aan) : base(naam, aan) { }
 
     private decimal _temperatuur; // verborgen voor de buitenwereld
 
     public decimal Temperatuur => _temperatuur; // alleen-lezen naar buiten toe
 
-    public void Temperatuurinsteller(decimal temperatuur)
+    public void SetTemperatuur(decimal temperatuur)
     {
-        if (temperatuur <= -20)
+        if (temperatuur < -20)
             throw new ArgumentException("Temperatuur moet boven de -20 zijn");
         if (temperatuur > 60)
             throw new ArgumentException("Temperatuur moet onder de 60 zijn");
