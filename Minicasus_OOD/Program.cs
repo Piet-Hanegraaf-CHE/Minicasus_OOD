@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class Program
 {
@@ -18,6 +19,17 @@ public class Benchmark
 
     private float stroomverbruik;
 
+}
+// Generics: Ontwerp een generieke klasse Logboek waarin logs van een specifiek type opgeslagen
+// kunnen worden(bijv.Logboek, Logboek of Logboek).
+// Zorg dat het generieke logboek methodes biedt om items toe te voegen, te filteren op ernst
+// (Severity) en een chronologisch overzicht op te vragen.
+public class Logboek<T>
+{
+    private T _logboek;
+
+    public void Vul(T item) => _logboek = item;
+    public T Haal() => _logboek;
 }
 
 
