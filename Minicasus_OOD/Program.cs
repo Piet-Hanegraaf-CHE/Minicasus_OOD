@@ -28,8 +28,8 @@ public class Logboek<T>
 {
     private T _logboek;
 
-    public void Vul(T item) => _logboek = item;
-    public T Haal() => _logboek;
+    public void VoegToe(T item) => _logboek = item;
+    public T HaalOp() => _logboek;
 }
 
 
@@ -55,7 +55,7 @@ public class RegelbareVerlichting : Apparaat
 
 }
 
-public class Camput // is een compositie van gebouw. Zonder gebouw geen campus.
+public class Campus // is een compositie van gebouw. Zonder gebouw geen campus.
 {
     //
 }
@@ -85,7 +85,22 @@ public abstract class Sensor : HardwareComponent // aggregatie
     }
 }
 
-public abstract class Apparaat
+public class TemperatuurSensor : Sensor
+{
+    //
+    public TemperatuurSensor(string naam, bool aan) : base(naam, aan)
+    {
+    }
+}
+
+public class BewegingSensor : Sensor
+{
+    public BewegingSensor(string naam, bool aan) : base(naam, aan)
+    {
+    }
+}
+
+public abstract class Apparaat : HardwareComponent
 {
     private string _naam;
     private bool _aan;
