@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class Program
@@ -13,17 +14,14 @@ public class Program
 }
 
 
-public class CampusManager
+public class CampusManager<T>
 {
-    public void RunCampusDiagnose(List<T>) 
+    public void RunCampusDiagnose(List<T> lijstvansensoren)
     { }
-    public void BerekenTotaalEnergieverbruik(List<T>)
+    public void BerekenTotaalEnergieverbruik(List<T> lijstvanapparatenmetverbruik)
     { }
 }
 
-public class T
-{
-}
 
 public class Benchmark
 {
@@ -32,16 +30,20 @@ public class Benchmark
 
     private float stroomverbruik;
 
+    public void PasToe()
+    {
+        throw new NotImplementedException();
+    }
+
 }
 // Generics: Ontwerp een generieke klasse Logboek waarin logs van een specifiek type opgeslagen
 // kunnen worden(bijv.Logboek, Logboek of Logboek).
 // Zorg dat het generieke logboek methodes biedt om items toe te voegen, te filteren op ernst
 // (Severity) en een chronologisch overzicht op te vragen.
-public class Logboek<T>
+public class Logboek<T> where T : Event
 {
-    private List<T> _logboek;
+    private List<T> _logboek = new List<T>();
 
-    public Func<T, object> Severity { get; private set; }
 
     public void VoegToe(T item)
     {
@@ -53,15 +55,19 @@ public class Logboek<T>
         return _logboek;
     }
 
-    public List<T> ErnstFilter()
+    public List<T> ErnstFilter(Event.Ernst ernst)
     {
-        _logboek.OrderBy(Severity);
-        return _logboek;
+        List<T> new_list = _logboek.Where(item => item.ErnstIndicatie == ernst).ToList();
+        return new_list;
     }
 }
 
-public class Event()
+public class Event
 {
+    public DateTime Moment { get; set; }
+    public string Zone { get; set; }
+    public string Typehardware { get; set; }
+    public Ernst ErnstIndicatie { get; set; }
     // Events zijn doorzoekbaar op (Informational, Warning, Critical), zone en type hardware.
     public enum Ernst
     {
@@ -70,12 +76,12 @@ public class Event()
         Critical
     }
 
-    string _zone;
-
-    string _typehardware;
-
-
-
+    public Event(string _zone, string _typehardware, Ernst _ernst)
+    {
+        Zone = _zone;
+        Typehardware = _typehardware;
+        ErnstIndicatie = _ernst;
+    }
 }
 
 public class RegelbareVerlichting : Apparaat
@@ -111,29 +117,56 @@ public class RegelbareVerlichting : Apparaat
 public class Campus // is een compositie van gebouw. Zonder gebouw geen campus.
 {
     private List<Gebouw> _gebouwenopcampus = new List<Gebouw>();
+
+    public void VoegGebouwToe(Gebouw gebouw)
+    {
+        _gebouwenopcampus.Add(gebouw);
+    }
 }
 
 public class Gebouw // is een compositie van zones. Zonder zones geen gebouw.
 {
     //
     private List<Zone> _zonesinhetgebouw = new List<Zone>();
+
+    public void VoegZoneToe(Zone zone)
+    {
+        _zonesinhetgebouw.Add(zone);
+    }
 }
 
 public class Zone // is een compositie van gebouw. Zonder gebouw geen zones.
 {
     private string naam;
     private List<HardwareComponent> _apparateninhetgebouw = new List<HardwareComponent> ();
+
+    public void VoegApperaatToe(HardwareComponent apperaat)
+    {
+        _apparateninhetgebouw.Add (apperaat);
+    }
 }
 
 public abstract class HardwareComponent
 {
     private string _naam;
+    private bool _aan;
 
     // aanuitlogboek is voorbereiding voor de implementatie van de BerekenHuidigVerbruik functie
-    private bool _aan;
+
 
     private Dictionary<DateTime, bool> _aanuitlogboek =
     new Dictionary<DateTime, bool>();
+
+    public void GeefNaam(string naam)
+    {
+        _naam = naam;
+    }
+
+    protected HardwareComponent(string naam, bool aan)
+    {
+        _naam = naam;
+        _aan = aan;
+    }
 
     public void ZetAan()
     {
@@ -165,7 +198,7 @@ public abstract class Sensor : HardwareComponent // aggregatie
 {
     private bool _aanhetmeten;
 
-    protected Sensor(string naam, bool aan)
+    protected Sensor(string naam, bool aan) : base(naam, aan)
     {
     }
     
@@ -178,9 +211,19 @@ public class TemperatuurSensor : Sensor
     {
     }
 
+    public void TemperatuurMeten()
+    {
+        ZetAan();
+    }
+
     public override void VoerDiagnoseUit()
     {
         //zodat elk type apparaat of sensor een eigen unieke diagnose - uitvoer en verbruiksberekening heeft
+        throw new NotImplementedException();
+    }
+
+    public override void BerekenHuidigVerbruik()
+    {
         throw new NotImplementedException();
     }
 }
@@ -189,6 +232,11 @@ public class BewegingSensor : Sensor
 {
     public BewegingSensor(string naam, bool aan) : base(naam, aan)
     {
+    }
+
+    public void BewegingMeten()
+    {
+        ZetAan();
     }
 
     public override void VoerDiagnoseUit()
@@ -208,7 +256,7 @@ public abstract class Apparaat : HardwareComponent
     private string _naam;
     private bool _aan;
 
-    public Apparaat(string naam, bool aan)
+    public Apparaat(string naam, bool aan) : base (naam, aan)
     {
         _naam = naam;
         _aan = aan;
@@ -221,6 +269,14 @@ public abstract class Apparaat : HardwareComponent
 
 public class Ventilatiesysteem : Apparaat
 {
+    private double _co2_waarde;
+
+    private int _intensiteit_stand;
+
+    public void VeranderIntensiteit(int stand)
+    {
+        _intensiteit_stand = stand;
+    }
     public Ventilatiesysteem(string naam, bool aan) : base(naam, aan)
     {
     }
