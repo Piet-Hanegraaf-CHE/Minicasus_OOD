@@ -14,7 +14,7 @@ public class Program
 }
 
 
-public class CampusManager<T>
+public class CampusManager<T> where T : Event
 {
     public void RunCampusDiagnose(List<T> lijstvansensoren)
     { }
@@ -25,10 +25,9 @@ public class CampusManager<T>
 
 public class Benchmark
 {
-    private float temperatuur;
-    private float beweging;
-
-    private float stroomverbruik;
+    public float Temperatuur { get; set; }
+    public float Beweging { get; set; }
+    public float Stroomverbruik { get; set; }
 
     public void PasToe()
     {
@@ -58,6 +57,11 @@ public class Logboek<T> where T : Event
     public List<T> ErnstFilter(Event.Ernst ernst)
     {
         List<T> new_list = _logboek.Where(item => item.ErnstIndicatie == ernst).ToList();
+        return new_list;
+    }
+    public List<T> TijdVolgorde()
+    {
+        List<T> new_list = _logboek.OrderBy(item => item.Moment).ToList();
         return new_list;
     }
 }
@@ -105,12 +109,12 @@ public class RegelbareVerlichting : Apparaat
 
     public override void VoerDiagnoseUit()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Diagnose regelbare Verlichting:");
     }
 
     public override void BerekenHuidigVerbruik()
     {
-        throw new NotImplementedException ();
+        Console.WriteLine("Berekening huidg verbruik regelbare Verlichting:");
     }
 }
 
@@ -148,11 +152,10 @@ public class Zone // is een compositie van gebouw. Zonder gebouw geen zones.
 
 public abstract class HardwareComponent
 {
-    private string _naam;
-    private bool _aan;
+    protected string _naam;
+    protected bool _aan;
 
     // aanuitlogboek is voorbereiding voor de implementatie van de BerekenHuidigVerbruik functie
-
 
     private Dictionary<DateTime, bool> _aanuitlogboek =
     new Dictionary<DateTime, bool>();
@@ -219,12 +222,12 @@ public class TemperatuurSensor : Sensor
     public override void VoerDiagnoseUit()
     {
         //zodat elk type apparaat of sensor een eigen unieke diagnose - uitvoer en verbruiksberekening heeft
-        throw new NotImplementedException();
+        Console.WriteLine("Diagnose temperatuur sensor:");
     }
 
     public override void BerekenHuidigVerbruik()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Berekening huidig verbruik temperatuur sensor:");
     }
 }
 
@@ -242,20 +245,17 @@ public class BewegingSensor : Sensor
     public override void VoerDiagnoseUit()
     {
         //zodat elk type apparaat of sensor een eigen unieke diagnose - uitvoer en verbruiksberekening heeft
-        throw new NotImplementedException();
+        Console.WriteLine("Diagnose bewegingssensor:");
     }
 
     public override void BerekenHuidigVerbruik()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Berekening huidig verbruik bewegingssensor:");
     }
 }
 
 public abstract class Apparaat : HardwareComponent
 {
-    private string _naam;
-    private bool _aan;
-
     public Apparaat(string naam, bool aan) : base (naam, aan)
     {
         _naam = naam;
@@ -308,7 +308,7 @@ public class SlimmeThermostaat : Apparaat //aggregatie
     public override void VoerDiagnoseUit()
     {
         //zodat elk type apparaat of sensor een eigen unieke diagnose heeft
-        throw new NotImplementedException();
+        Console.WriteLine("Diagnose Slimme Thermostaat:");
     }
 
     public override void BerekenHuidigVerbruik()
@@ -317,6 +317,7 @@ public class SlimmeThermostaat : Apparaat //aggregatie
         //Dit kan ik berekenen op basis van het aan uit logboek
         // Termo SlimmeThermostaat = new SlimmeThermostaat("Termo", true);
         // Termo.GetAanUitLogboek();
-        throw new NotImplementedException();
+        Console.WriteLine("Berekening verbruik Slimme Thermostaat:");
+
     }
 }
