@@ -10,6 +10,10 @@ public class Program
         Console.WriteLine($"Apparaat: {slimmeThermostaat.Naam}, Aan: {slimmeThermostaat.Aan}");
         slimmeThermostaat.SetTemperatuur(22);
         Console.WriteLine($"Nieuwe temperatuur ingesteld op: {slimmeThermostaat.Temperatuur}°C");
+        slimmeThermostaat.BerekenHuidigVerbruik();
+        Campus campus1 = new Campus();
+        Gebouw prisma = new Gebouw();
+        campus1.VoegGebouwToe(prisma);
     }
 }
 
@@ -318,6 +322,12 @@ public class SlimmeThermostaat : Apparaat //aggregatie
         // Termo SlimmeThermostaat = new SlimmeThermostaat("Termo", true);
         // Termo.GetAanUitLogboek();
         Console.WriteLine("Berekening verbruik Slimme Thermostaat:");
+        Dictionary<DateTime, bool> aanuitlogboekintern = GetAanUitLogboek();
+        foreach (KeyValuePair<DateTime, bool> item in aanuitlogboekintern)
+        {
+            Console.WriteLine(item.Key.ToString() + ": " + item.Value);
+        }
+
 
     }
 }
